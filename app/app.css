@@ -24,6 +24,10 @@ th {
   font-weight: normal;
 }
 
+.chart {
+	margin-top: 50px;
+}
+
 .site-footer {
   margin-top: 50px;
 }
