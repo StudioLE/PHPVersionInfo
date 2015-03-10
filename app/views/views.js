@@ -27,10 +27,52 @@ angular.module('myApp.views', ['ngRoute'])
 
 }])
 
-.controller('CustomCtrl', [function() {
+.controller('SharedCtrl', ['$scope', '$http', function($scope, $http) {
+  // Default partial
+  $scope.partial = 'table'
+  
+  // Get yaml
+  $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/shared_hosts.yml')
+    .success(function(yaml, status, headers, config) {
+      $scope.hosts = jsyaml.safeLoad(yaml)
+      //console.log(hosts)
+    })
+    .error(function(data, status, headers, config) {
+      console.error(status)
+      console.error(data)
+    });
 
 }])
 
-.controller('LinuxCtrl', [function() {
+.controller('CustomCtrl', ['$scope', '$http', function($scope, $http) {
+  // Default partial
+  $scope.partial = 'table'
+  
+  // Get yaml
+  $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/custom_hosts.yml')
+    .success(function(yaml, status, headers, config) {
+      $scope.hosts = jsyaml.safeLoad(yaml)
+      //console.log(hosts)
+    })
+    .error(function(data, status, headers, config) {
+      console.error(status)
+      console.error(data)
+    });
 
+}])
+
+.controller('LinuxCtrl', ['$scope', '$http', function($scope, $http) {
+  // Default partial
+  $scope.partial = 'table'
+  
+  // Get yaml
+  $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/linux_distros.yml')
+    .success(function(yaml, status, headers, config) {
+      $scope.distros = jsyaml.safeLoad(yaml)
+      //console.log(hosts)
+    })
+    .error(function(data, status, headers, config) {
+      console.error(status)
+      console.error(data)
+    });
 }])
