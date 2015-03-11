@@ -29,6 +29,28 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
 /*****************************************************************
 *
+* YamlService factory
+*
+******************************************************************/
+.factory('YamlService', function($http) {
+  return {
+    get: function(date_type) {
+      return $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/' + date_type + '.yml')
+        .then(function(response) {
+          if(response.status === 200) {
+            return jsyaml.safeLoad(response.data)
+            getReleases()
+          }
+          else {
+            console.error(response)
+          }
+        });
+    }
+  }
+})
+
+/*****************************************************************
+*
 * IntroCtrl controller
 *
 ******************************************************************/
@@ -43,19 +65,12 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('SharedCtrl', ['$scope', '$http', function($scope, $http) {
-  
-  // Get yaml
-  // @todo Move $get into Hosts factory
-  $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/shared_hosts.yml')
-    .success(function(yaml, status, headers, config) {
-      $scope.hosts = jsyaml.safeLoad(yaml)
-        getReleases()
-    })
-    .error(function(data, status, headers, config) {
-      console.error(status)
-      console.error(data)
-    });
+.controller('SharedCtrl', ['$scope', '$http', 'YamlService', function($scope, $http, YamlService) {
+
+  YamlService.get('shared_hosts').then(function(data){
+    $scope.hosts = data
+    getReleases()
+  })
 
   function getReleases() {
     
@@ -245,20 +260,12 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('CustomCtrl', ['$scope', '$http', function($scope, $http) {
-  // Default partial
-  $scope.partial = 'table'
+.controller('CustomCtrl', ['$scope', 'YamlService', function($scope, YamlService) {
+
   // @todo Add version release dates to table tooltips
-  
-  // Get yaml
-  $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/custom_hosts.yml')
-    .success(function(yaml, status, headers, config) {
-      $scope.hosts = jsyaml.safeLoad(yaml)
-    })
-    .error(function(data, status, headers, config) {
-      console.error(status)
-      console.error(data)
-    });
+  YamlService.get('custom_hosts').then(function(data){
+    $scope.hosts = data
+  })
 
 }])
 
@@ -268,17 +275,10 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('LinuxCtrl', ['$scope', '$http', function($scope, $http) {
-  // Default partial
-  $scope.partial = 'table'
-  
-  // Get yaml
-  $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/linux_distros.yml')
-    .success(function(yaml, status, headers, config) {
-      $scope.distros = jsyaml.safeLoad(yaml)
-    })
-    .error(function(data, status, headers, config) {
-      console.error(status)
-      console.error(data)
-    });
+.controller('LinuxCtrl', ['$scope', 'YamlService', function($scope, YamlService) {
+
+  // @todo Add version release dates to table tooltips
+  YamlService.get('linux_distros').then(function(data){
+    $scope.distros = data
+  })
 }])
