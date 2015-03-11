@@ -10,7 +10,7 @@ The design still needs a lot of work. Initial focus has been on functionality.
 
 ## Demo
 
-  <link to demo>
+[Demo website](https://phpversions.studiole.uk)
 
 ## Install
 
