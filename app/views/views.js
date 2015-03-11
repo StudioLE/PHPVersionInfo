@@ -27,7 +27,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
 }])
 
-.controller('SharedCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
+.controller('SharedCtrl', ['$scope', '$http', function($scope, $http) {
   
   // Get yaml
   // @todo Move $get into Hosts factory
@@ -153,6 +153,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
       }
       else if(ver == 'default') {
         color = '#E74C3C'
+        vis = false
       }
       hostsData.push({
         name: formatVersion(ver),
@@ -225,6 +226,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 .controller('CustomCtrl', ['$scope', '$http', function($scope, $http) {
   // Default partial
   $scope.partial = 'table'
+  // @todo Add version release dates to table tooltips
   
   // Get yaml
   $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/custom_hosts.yml')
