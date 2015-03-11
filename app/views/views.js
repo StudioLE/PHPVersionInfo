@@ -9,11 +9,11 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
     templateUrl: 'views/intro.html',
     controller: 'IntroCtrl'
   });
-  $routeProvider.when('/shared-hosts/:type?', {
+  $routeProvider.when('/shared-hosts', {
     templateUrl: 'views/shared-hosts.html',
     controller: 'SharedCtrl'
   });
-  $routeProvider.when('/custom-hosts/:type?', {
+  $routeProvider.when('/custom-hosts', {
     templateUrl: 'views/custom-hosts.html',
     controller: 'CustomCtrl'
   });
@@ -34,21 +34,12 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
   $http.get('https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/shared_hosts.yml')
     .success(function(yaml, status, headers, config) {
       $scope.hosts = jsyaml.safeLoad(yaml)
-      if($routeParams.type === 'chart') {
         getReleases()
-      }
     })
     .error(function(data, status, headers, config) {
       console.error(status)
       console.error(data)
     });
-
-  if($routeParams.type !== 'chart') {
-    $scope.partial = 'table'
-  }
-  else { 
-    $scope.partial = 'chart'
-  }
 
   function getReleases() {
     
@@ -59,9 +50,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
     // @todo Move $get into Releases factory
     $http.get('data/releases.json')
       .success(function(phpReleases, status, headers, config) {
-        if($routeParams.type === 'chart') {
-          populateChart(phpReleases)
-        }
+        populateChart(phpReleases)
       })
       .error(function(data, status, headers, config) {
         console.error(status)
@@ -143,24 +132,39 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
     var hostsData = []
 
     versions.forEach(function(ver){
-      if(ver == 'php52' || ver == 'php53') {
-        var vis = false
-      }
-      else {
+        var color = false
         var vis = true
+      if(ver == 'php52') {
+        color = '#BFA365'
+        vis = false
+      }
+      else if(ver == 'php53') {
+        color = '#2C3E50'
+        vis = false
+      }
+      else if(ver == 'php54') {
+        color = '#349872'
+      }
+      else if(ver == 'php55') {
+        color = '#8E70DB'
+      }
+      else if(ver == 'php56') {
+        color = '#2980B9'
+      }
+      else if(ver == 'default') {
+        color = '#E74C3C'
       }
       hostsData.push({
         name: formatVersion(ver),
         data: Object.keys(data[ver]).map(function (key) {
           return data[ver][key]
         }),
-        visible: vis
+        visible: vis,
+        color: color
       })
     })
 
     // @todo sort data
-
-    // Age of release against number of hosts
 
     //This is not a highcharts object. It just looks a little like one!
     var chartConfig = {
@@ -197,7 +201,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
           //currentMin: 0,
           //currentMax: 20,
           title: {
-            text: 'Count',
+            text: 'Number of hosts using version',
           }
         }
       },
