@@ -28,6 +28,22 @@ th {
 	margin-top: 50px;
 }
 
+.highcharts-tooltip {
+  max-width: 200px;
+}
+
+.highcharts-tooltip h3 {
+  margin: 2px 0;
+  font-size: 16px;
+}
+
+.highcharts-tooltip p {
+  margin: 0;
+  width: 400px;
+  font-size: 13px;
+  white-space: normal;
+}
+
 .site-footer {
   margin-top: 50px;
 }
