@@ -39,7 +39,6 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
         .then(function(response) {
           if(response.status === 200) {
             return jsyaml.safeLoad(response.data)
-            getReleases()
           }
           else {
             console.error(response)
