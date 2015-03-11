@@ -50,15 +50,15 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
 /*****************************************************************
 *
-* Releases factory
+* Version factory
 *
 ******************************************************************/
-.factory('ReleasesService', function($http) {
+.factory('Version', function($http) {
   return {
     versions: [
       'php52', 'php53', 'php54', 'php55', 'php56', 'default'
     ],
-    get: function() {
+    getReleases: function() {
       return $http.get('data/releases.json')
         .then(function(response) {
           if(response.status === 200) {
@@ -91,13 +91,13 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 * Chart factory
 *
 ******************************************************************/
-.factory('ChartService', function(ReleasesService) {
+.factory('ChartService', function(Version) {
   return {
     create: function(hosts, phpReleases) {
 
       // Initialise our data object. Create a key for each version
       var data = {}
-      var versions = ReleasesService.versions
+      var versions = Version.versions
       versions.forEach(function(ver) { data[ver] = {} })
 
       // Go through the list of hosts and add the host versions into the data object
@@ -110,12 +110,12 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
           // If this is the first entry for this version then set some defaults
           else if( ! data[ver]['v' + host[ver]]) {
             // If we don't have any relase information
-            if(phpReleases[ReleasesService.format(ver, host[ver])] === undefined) {
-              console.debug('No release information for version ' + ReleasesService.format(ver, host[ver]))
+            if(phpReleases[Version.format(ver, host[ver])] === undefined) {
+              console.debug('No release information for version ' + Version.format(ver, host[ver]))
             }
             // If we don't have a relase date
-            else if(phpReleases[ReleasesService.format(ver, host[ver])]['date'] === undefined) {
-              console.debug('No release date for version ' + ReleasesService.format(ver, host[ver]))
+            else if(phpReleases[Version.format(ver, host[ver])]['date'] === undefined) {
+              console.debug('No release date for version ' + Version.format(ver, host[ver]))
               // No release dates for 5.5.22, 5.6.6
               // No release information for 5.2.6
               // @todo manual override of release date
@@ -124,13 +124,13 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
             else {
               // Release date
               // Due to timezones this information may be a day out. This shouldn't be an issue.
-              var rDate = new Date(phpReleases[ReleasesService.format(ver, host[ver])]['date'])
+              var rDate = new Date(phpReleases[Version.format(ver, host[ver])]['date'])
               var monthsSince = (Date.now() - rDate.valueOf()) / (1000*60*60*24*30)
 
               // @todo Style tooltips
               data[ver]['v' + host[ver]] = {
                 name: host.name,
-                version: ReleasesService.format(ver, host[ver]),
+                version: Version.format(ver, host[ver]),
                 releaseDate: rDate.toISOString().substr(0,10),
                 x: rDate.valueOf(),
                 y: 1
@@ -173,7 +173,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
           vis = false
         }
         hostsData.push({
-          name: ReleasesService.format(ver),
+          name: Version.format(ver),
           data: Object.keys(data[ver]).map(function (key) {
             return data[ver][key]
           }),
@@ -248,11 +248,11 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('SharedCtrl', ['$scope', 'YamlService', 'ReleasesService', 'ChartService', function($scope, YamlService, ReleasesService, ChartService) {
+.controller('SharedCtrl', ['$scope', 'YamlService', 'Version', 'ChartService', function($scope, YamlService, Version, ChartService) {
 
   YamlService.get('shared_hosts').then(function(data){
     $scope.hosts = data
-    ReleasesService.get().then(function(data){
+    Version.getReleases().then(function(data){
       $scope.chartConfig = ChartService.create($scope.hosts, data)
     })
   })
@@ -286,5 +286,5 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
   YamlService.get('linux_distros').then(function(data){
     $scope.distros = data
   })
-  
+
 }])
