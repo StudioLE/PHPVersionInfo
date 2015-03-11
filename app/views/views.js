@@ -50,6 +50,44 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
 /*****************************************************************
 *
+* Releases factory
+*
+******************************************************************/
+.factory('ReleasesService', function($http) {
+  return {
+    versions: [
+      'php52', 'php53', 'php54', 'php55', 'php56', 'default'
+    ],
+    get: function() {
+      return $http.get('data/releases.json')
+        .then(function(response) {
+          if(response.status === 200) {
+            return response.data
+          }
+          else {
+            console.error(response)
+          }
+        })
+    },
+    format: function(ver, patch) {
+      if(ver === 'default' && patch === undefined) {
+        return 'default'
+      }
+      else if(ver === 'default') {
+        return patch
+      }
+      else if(patch === undefined) {
+        return '5.' + ver.substr(-1)
+      }
+      else {
+        return '5.' + ver.substr(-1) + '.' + patch
+      }
+    }
+  }
+})
+
+/*****************************************************************
+*
 * IntroCtrl controller
 *
 ******************************************************************/
@@ -64,62 +102,24 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('SharedCtrl', ['$scope', '$http', 'YamlService', function($scope, $http, YamlService) {
+.controller('SharedCtrl', ['$scope', '$http', 'YamlService', 'ReleasesService', function($scope, $http, YamlService, ReleasesService) {
 
   YamlService.get('shared_hosts').then(function(data){
     $scope.hosts = data
-    getReleases()
+    ReleasesService.get().then(function(data){
+      populateChart(data)
+    })
   })
-
-  function getReleases() {
-    
-    // Get php releases
-    // @todo mechanism to fetch latest php releases from php.net
-    // http://php.net/releases/index.php?serialize=1&version=5&max=100
-    // 'Access-Control-Allow-Origin' not present for php.net so use local JSON
-    // @todo Move $get into Releases factory
-    $http.get('data/releases.json')
-      .success(function(phpReleases, status, headers, config) {
-        populateChart(phpReleases)
-      })
-      .error(function(data, status, headers, config) {
-        console.error(status)
-        console.error(data)
-      });
-  }
 
   function populateChart(phpReleases) {
 
     var hosts = $scope.hosts
 
-    var data = {
-      php52: {},
-      php53: {},
-      php54: {},
-      php55: {},
-      php56: {},
-      default: {}
-    }
-
-    var versions = ['php52', 'php53', 'php54', 'php55', 'php56', 'default']
-
-    // @todo convert into Service
-    function formatVersion(ver, patch) {
-      if(ver === 'default' && patch === undefined) {
-        return 'default'
-      }
-      else if(ver === 'default') {
-        return patch
-      }
-      else if(patch === undefined) {
-        return '5.' + ver.substr(-1)
-      }
-      else {
-        return '5.' + ver.substr(-1) + '.' + patch
-      }
-    }
-
-
+    // Initialise our data array. Create a key for each version
+    var data = {}
+    var versions = ReleasesService.versions
+    versions.forEach(function(ver) { data[ver] = {} })
+    
     hosts.forEach(function(host) {
       versions.forEach(function(ver) {
         if(host[ver] === undefined ||
@@ -127,11 +127,11 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
           // If unknown do nothing
         }
         else if( ! data[ver]['v' + host[ver]]) {
-          if(phpReleases[formatVersion(ver, host[ver])] === undefined) {
-            console.debug('No release information for version ' + formatVersion(ver, host[ver]))
+          if(phpReleases[ReleasesService.format(ver, host[ver])] === undefined) {
+            console.debug('No release information for version ' + ReleasesService.format(ver, host[ver]))
           }
-          else if(phpReleases[formatVersion(ver, host[ver])]['date'] === undefined) {
-            console.debug('No release date for version ' + formatVersion(ver, host[ver]))
+          else if(phpReleases[ReleasesService.format(ver, host[ver])]['date'] === undefined) {
+            console.debug('No release date for version ' + ReleasesService.format(ver, host[ver]))
             // No release dates for 5.5.22, 5.6.6
             // No release information for 5.2.6
             // @todo manual override of release date
@@ -139,13 +139,13 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
           else {
             // Release date
             // Due to timezones this information may be a day out. This shouldn't be an issue.
-            var rDate = new Date(phpReleases[formatVersion(ver, host[ver])]['date'])
+            var rDate = new Date(phpReleases[ReleasesService.format(ver, host[ver])]['date'])
             var monthsSince = (Date.now() - rDate.valueOf()) / (1000*60*60*24*30)
 
             // @todo Style tooltips
             data[ver]['v' + host[ver]] = {
               name: host.name,
-              version: formatVersion(ver, host[ver]),
+              version: ReleasesService.format(ver, host[ver]),
               releaseDate: rDate.toISOString().substr(0,10),
               x: rDate.valueOf(),
               y: 1
@@ -186,7 +186,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
         vis = false
       }
       hostsData.push({
-        name: formatVersion(ver),
+        name: ReleasesService.format(ver),
         data: Object.keys(data[ver]).map(function (key) {
           return data[ver][key]
         }),
