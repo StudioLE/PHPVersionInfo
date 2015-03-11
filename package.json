@@ -1,10 +1,10 @@
 {
-  "name": "angular-seed",
+  "name": "PHPVersionsInfo",
   "private": true,
   "version": "0.0.0",
-  "description": "A starter project for AngularJS",
-  "repository": "https://github.com/angular/angular-seed",
-  "license": "MIT",
+  "description": "An Angular.js frontend for phpversions.info",
+  "repository": "https://github.com/StudioLE/PHPVersionsInfo",
+  "license": false,
   "devDependencies": {
     "karma": "~0.10",
     "protractor": "^1.1.1",
