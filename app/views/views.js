@@ -60,7 +60,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
     },
     data: {},
     versions: [
-      '5.2', '5.3', '5.4', '5.5', '5.6', 'default'
+      'default', '5.2', '5.3', '5.4', '5.5', '5.6'
     ],
     getReleases: function() {
       return $http.get('data/releases.json')
@@ -189,7 +189,6 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
         }
         else if(ver == 'default') {
           color = '#E74C3C'
-          vis = false
         }
 
         series.push({
@@ -295,12 +294,13 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('SharedCtrl', ['$scope', 'YamlService', 'Version', 'ChartService', function($scope, YamlService, Version, ChartService) {
+.controller('SharedCtrl', ['$scope', 'YamlService', 'ChartService', function($scope, YamlService, ChartService) {
 
   YamlService.get('shared_hosts').then(function(data){
     $scope.hosts = data
     ChartService.create(data).then(function(data){
       $scope.chartConfig = data
+      $scope.chartConfig.series[0].visible = false
     })
   })
 
@@ -312,11 +312,14 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('CustomCtrl', ['$scope', 'YamlService', function($scope, YamlService) {
+.controller('CustomCtrl', ['$scope', 'YamlService', 'ChartService', function($scope, YamlService, ChartService) {
 
   // @todo Add version release dates to table tooltips
   YamlService.get('custom_hosts').then(function(data){
     $scope.hosts = data
+    ChartService.create(data).then(function(data){
+      $scope.chartConfig = data
+    })
   })
 
 }])
@@ -327,11 +330,14 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('LinuxCtrl', ['$scope', 'YamlService', function($scope, YamlService) {
+.controller('LinuxCtrl', ['$scope', 'YamlService', 'ChartService', function($scope, YamlService, ChartService) {
 
   // @todo Add version release dates to table tooltips
   YamlService.get('linux_distros').then(function(data){
     $scope.distros = data
+    ChartService.create(data).then(function(data){
+      $scope.chartConfig = data
+    })
   })
 
 }])
