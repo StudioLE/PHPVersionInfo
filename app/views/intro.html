@@ -1,4 +1,4 @@
-  <h1 class="page-heading">Hosts</h1>
+  <h2>Introduction</h2>
 
   <p>As PHP developers, we are often stuck with hosts that support insanely old versions of PHP. This means that some projects end up supporting those insanely old versions, and we all get stuck in this "Mexican Standoff" situation.</p>
 
@@ -6,4 +6,11 @@
 
   <p>Let's keep close tabs on who is offering which versions of PHP, so we can help those less in the know find good companies to host their stuff on.</p>
 
- 
+ <div class="row quick-links" ng-controller="navCtrl">
+  <div class="col-sm-4" ng-repeat="link in nav">
+    <a href="{{link.url}}" class="well">
+      <i class="fa fa-{{link.icon}}"></i>
+      <h3>{{link.title}}</h3>
+    </a>
+  </div>
+ </div>

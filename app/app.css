@@ -16,6 +16,38 @@ a:hover {
   color: #BEC5E4;
 }
 
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus {
+  background-color: #7680B0;
+}
+
+
+.quick-links {
+  margin-top: 50px;
+}
+
+.quick-links a {
+  padding: 40px 19px 30px 19px;
+  display: block;
+  background-color: #D2D6E7;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.quick-links a:hover {
+  background-color: #8892BF;
+  color: #fff;
+  text-decoration: none;
+}
+
+.quick-links i {
+  font-size: 30px;
+}
+
+.quick-links h3 {
+  margin-top: 5px;
+  letter-spacing: 2px;
+}
+
 table {
   margin-top: 20px;
 }

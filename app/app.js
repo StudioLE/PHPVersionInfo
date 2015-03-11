@@ -4,6 +4,7 @@
 angular.module('myApp', [
   'ngRoute',
   'myApp.views',
+  'navList',
   'highcharts-ng'
 ])
 .config(['$routeProvider', function($routeProvider) {
