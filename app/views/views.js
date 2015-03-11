@@ -115,27 +115,32 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
     var hosts = $scope.hosts
 
-    // Initialise our data array. Create a key for each version
+    // Initialise our data object. Create a key for each version
     var data = {}
     var versions = ReleasesService.versions
     versions.forEach(function(ver) { data[ver] = {} })
-    
+
+    // Go through the list of hosts and add the host versions into the data object
     hosts.forEach(function(host) {
       versions.forEach(function(ver) {
         if(host[ver] === undefined ||
             host[ver] === '??') {
-          // If unknown do nothing
+          // If the version if unknown do nothing
         }
+        // If this is the first entry for this version then set some defaults
         else if( ! data[ver]['v' + host[ver]]) {
+          // If we don't have any relase information
           if(phpReleases[ReleasesService.format(ver, host[ver])] === undefined) {
             console.debug('No release information for version ' + ReleasesService.format(ver, host[ver]))
           }
+          // If we don't have a relase date
           else if(phpReleases[ReleasesService.format(ver, host[ver])]['date'] === undefined) {
             console.debug('No release date for version ' + ReleasesService.format(ver, host[ver]))
             // No release dates for 5.5.22, 5.6.6
             // No release information for 5.2.6
             // @todo manual override of release date
           }
+          // If we do have a release date create an entry in the data object
           else {
             // Release date
             // Due to timezones this information may be a day out. This shouldn't be an issue.
@@ -152,6 +157,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
             }
           }
         }
+        // If this is not the first entry for this version then we append the host name and and ++ the count
         else {
           data[ver]['v' + host[ver]].name += ', ' + host.name      
           data[ver]['v' + host[ver]].y ++
@@ -161,6 +167,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
     var hostsData = []
 
+    // Create a series array from our data object
     versions.forEach(function(ver){
         var color = false
         var vis = true
@@ -242,9 +249,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
       },
       loading: false
     };
-
-
-
+    
     $scope.chartConfig = chartConfig;
   }
 
