@@ -2,7 +2,11 @@
 
 angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
-// https://cdn.rawgit.com/philsturgeon/phpversions.info/gh-pages/_data/shared_hosts.yml
+/*****************************************************************
+*
+* Route provider
+*
+******************************************************************/
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/', {
@@ -23,9 +27,21 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
   });
 }])
 
+/*****************************************************************
+*
+* IntroCtrl controller
+*
+******************************************************************/
+
 .controller('IntroCtrl', [function() {
 
 }])
+
+/*****************************************************************
+*
+* SharedCtrl controller
+*
+******************************************************************/
 
 .controller('SharedCtrl', ['$scope', '$http', function($scope, $http) {
   
@@ -223,6 +239,12 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 
 }])
 
+/*****************************************************************
+*
+* CustomCtrl controller
+*
+******************************************************************/
+
 .controller('CustomCtrl', ['$scope', '$http', function($scope, $http) {
   // Default partial
   $scope.partial = 'table'
@@ -239,6 +261,12 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
     });
 
 }])
+
+/*****************************************************************
+*
+* LinuxCtrl controller
+*
+******************************************************************/
 
 .controller('LinuxCtrl', ['$scope', '$http', function($scope, $http) {
   // Default partial
