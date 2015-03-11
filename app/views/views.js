@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
+angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 
 /*****************************************************************
 *
@@ -294,7 +294,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('SharedCtrl', ['$scope', 'YamlService', 'ChartService', function($scope, YamlService, ChartService) {
+.controller('SharedCtrl', ['$scope', 'YamlService', 'ChartService', 'Version', function($scope, YamlService, ChartService, Version) {
 
   YamlService.get('shared_hosts').then(function(data){
     $scope.hosts = data
@@ -304,6 +304,15 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
     })
   })
 
+  $scope.versionInfo = function(key) {
+    var release = Version.releases(key)
+    if(release !== undefined)
+      return 'Released: ' + release.date
+    else {
+      return 'No data available'
+    }
+  }
+
 }])
 
 /*****************************************************************
@@ -312,7 +321,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('CustomCtrl', ['$scope', 'YamlService', 'ChartService', function($scope, YamlService, ChartService) {
+.controller('CustomCtrl', ['$scope', 'YamlService', 'ChartService', 'Version', function($scope, YamlService, ChartService, Version) {
 
   // @todo Add version release dates to table tooltips
   YamlService.get('custom_hosts').then(function(data){
@@ -322,6 +331,15 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
     })
   })
 
+  $scope.versionInfo = function(key) {
+    var release = Version.releases(key)
+    if(release !== undefined)
+      return 'Released: ' + release.date
+    else {
+      return 'No data available'
+    }
+  }
+
 }])
 
 /*****************************************************************
@@ -330,7 +348,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
 *
 ******************************************************************/
 
-.controller('LinuxCtrl', ['$scope', 'YamlService', 'ChartService', function($scope, YamlService, ChartService) {
+.controller('LinuxCtrl', ['$scope', 'YamlService', 'ChartService', 'Version', function($scope, YamlService, ChartService, Version) {
 
   // @todo Add version release dates to table tooltips
   YamlService.get('linux_distros').then(function(data){
@@ -339,5 +357,14 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng'])
       $scope.chartConfig = data
     })
   })
+
+  $scope.versionInfo = function(key) {
+    var release = Version.releases(key)
+    if(release !== undefined)
+      return 'Released: ' + release.date
+    else {
+      return 'No data available'
+    }
+  }
 
 }])
