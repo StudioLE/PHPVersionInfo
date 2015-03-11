@@ -3,31 +3,26 @@
       <tr>
         <th>Host</th>
         <th>Default</th>
-        <th>5.2</th>
-        <th>5.3</th>
-        <th>5.4</th>
-        <th>5.5</th>
-        <th>5.6</th>
-        <th>Manual Upgrade</th>
-        <th>Auto Upgrade</th>
+        <th ng-repeat="n in [2, 3, 4, 5, 6]">5.{{n}}</th>
+        <th class="text-center">Manual Upgrade</th>
+        <th class="text-center">Auto Upgrade</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat="host in hosts">
         <td><a href="{{ host.url }}">{{ host.name }}</a></td>
         <td><span class="em">{{ host.default }}</span></td>
-        <td ng-if="host.php52"><span class="text-muted">5.2.</span>{{ host.php52 }}</span></td>
-        <td ng-if=" ! host.php52">-</td>
-        <td ng-if="host.php53"><span class="text-muted">5.3.</span>{{ host.php53 }}</span></td>
-        <td ng-if=" ! host.php53">-</td>
-        <td ng-if="host.php54"><span class="text-muted">5.4.</span>{{ host.php54 }}</td>
-        <td ng-if=" ! host.php54">-</td>
-        <td ng-if="host.php55"><span class="text-muted">5.5.</span>{{ host.php55 }}</td>
-        <td ng-if=" ! host.php55">-</td>
-        <td ng-if="host.php56"><span class="text-muted">5.6.</span>{{ host.php56 }}</td>
-        <td ng-if=" ! host.php56">-</td>
-        <td>{{ host.manual_update }}</td>
-        <td>{{ host.auto_update }}</td>
+        <td ng-repeat="n in [2, 3, 4, 5, 6]">
+            <div ng-if="host['php5'+ n]"><span class="text-muted">5.{{n}}.</span>{{ host['php5'+ n] }}</div>
+            <div ng-if=" ! host['php5'+ n]" class="text-center text-muted">-</div>
+        </td>
+        <td>
+            <div ng-if="host.manual_update" class="text-center">{{ host.manual_update }}</div>
+            <div ng-if=" ! host.manual_update" class="text-center text-muted">-</div>
+        </td>
+        <td>
+            <div ng-if="host.auto_update" class="text-center">{{ host.auto_update }}</div>
+            <div ng-if=" ! host.auto_update" class="text-center text-muted">-</div></td>
       </tr>
     </tbody>
   </table>
