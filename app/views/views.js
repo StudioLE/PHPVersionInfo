@@ -306,6 +306,9 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 
   $scope.versionInfo = function(key) {
     var release = Version.releases(key)
+    // @todo Check threats for each php version. Make a $get call to:
+    // https://cdn.rawgit.com/psecio/versionscan/master/src/Psecio/Versionscan/checks.json
+    // Then compare the php version with it to check threats
     if(release !== undefined)
       return 'Released: ' + release.date
     else {
