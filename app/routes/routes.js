@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('phpVersionInfo.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
+angular.module('phpVersionInfo.routes', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 
 /*****************************************************************
 *
@@ -9,38 +9,38 @@ angular.module('phpVersionInfo.views', ['ngRoute', 'highcharts-ng', 'ui.bootstra
 ******************************************************************/
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/', {
-    templateUrl: 'views/intro.html',
-    controller: 'IntroCtrl'
+    templateUrl: 'routes/intro.html',
+    controller: 'IntroController'
   });
   $routeProvider.when('/shared-hosts', {
-    templateUrl: 'views/shared-hosts.html',
-    controller: 'SharedCtrl'
+    templateUrl: 'routes/shared-hosts.html',
+    controller: 'SharedController'
   });
   $routeProvider.when('/custom-hosts', {
-    templateUrl: 'views/custom-hosts.html',
-    controller: 'CustomCtrl'
+    templateUrl: 'routes/custom-hosts.html',
+    controller: 'CustomController'
   });
   $routeProvider.when('/linux-distros', {
-    templateUrl: 'views/linux-distros.html',
-    controller: 'LinuxCtrl'
+    templateUrl: 'routes/linux-distros.html',
+    controller: 'LinuxController'
   });
 }])
 
 /*****************************************************************
 *
-* IntroCtrl controller
+* IntroController
 *
 ******************************************************************/
-.controller('IntroCtrl', [function() {
+.controller('IntroController', [function() {
 
 }])
 
 /*****************************************************************
 *
-* SharedCtrl controller
+* SharedController
 *
 ******************************************************************/
-.controller('SharedCtrl', ['$scope', 'Yaml', 'Chart', 'Version', function($scope, Yaml, Chart, Version) {
+.controller('SharedController', ['$scope', 'Yaml', 'Chart', 'Version', function($scope, Yaml, Chart, Version) {
 
   Yaml.get('shared_hosts').then(function(data){
     $scope.hosts = data
@@ -60,10 +60,10 @@ angular.module('phpVersionInfo.views', ['ngRoute', 'highcharts-ng', 'ui.bootstra
 
 /*****************************************************************
 *
-* CustomCtrl controller
+* CustomController
 *
 ******************************************************************/
-.controller('CustomCtrl', ['$scope', 'Yaml', 'Chart', 'Version', function($scope, Yaml, Chart, Version) {
+.controller('CustomController', ['$scope', 'Yaml', 'Chart', 'Version', function($scope, Yaml, Chart, Version) {
 
   // @todo Add version release dates to table tooltips
   Yaml.get('custom_hosts').then(function(data){
@@ -83,10 +83,10 @@ angular.module('phpVersionInfo.views', ['ngRoute', 'highcharts-ng', 'ui.bootstra
 
 /*****************************************************************
 *
-* LinuxCtrl controller
+* LinuxController
 *
 ******************************************************************/
-.controller('LinuxCtrl', ['$scope', 'Yaml', 'Chart', 'Version', function($scope, Yaml, Chart, Version) {
+.controller('LinuxController', ['$scope', 'Yaml', 'Chart', 'Version', function($scope, Yaml, Chart, Version) {
 
   // @todo Add version release dates to table tooltips
   Yaml.get('linux_distros').then(function(data){
