@@ -1,6 +1,12 @@
 angular.module('navList', [])
 
-.controller('navCtrl', ['$scope', '$location', function ($scope, $location) {
+
+/*****************************************************************
+*
+* navController
+*
+******************************************************************/
+.controller('navController', ['$scope', '$location', function ($scope, $location) {
   $scope.navClass = function (href) {
     return href === '#' + $location.path() ? 'active' : '';
   };

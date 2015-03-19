@@ -3,7 +3,7 @@
 // Declare app level module which depends on views, and components
 angular.module('phpVersionInfo', [
   'ngRoute',
-  'phpVersionInfo.views',
+  'phpVersionInfo.routes',
   'phpVersionInfo.yaml',
   'phpVersionInfo.chart',
   'phpVersionInfo.version',
