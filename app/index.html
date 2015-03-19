@@ -33,7 +33,7 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" ng-app="navList">
-      <ul class="nav navbar-nav" ng-controller="navCtrl">
+      <ul class="nav navbar-nav" ng-controller="NavController">
         <li ng-repeat="link in nav" ng-class="navClass(link.url)"><a href="{{link.url}}">{{link.title}}</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
