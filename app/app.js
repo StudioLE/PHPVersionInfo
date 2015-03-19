@@ -4,8 +4,7 @@
 angular.module('myApp', [
   'ngRoute',
   'myApp.views',
-  'navList',
-  'highcharts-ng'
+  'navList'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/404'});
