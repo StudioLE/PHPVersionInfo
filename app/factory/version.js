@@ -13,9 +13,17 @@ angular.module('phpVersionInfo.version', [])
       releases: []
     },
     data: {},
-    versions: [
-      'default', '5.2', '5.3', '5.4', '5.5', '5.6'
-    ],
+    series: {
+      '5.2': { color: '#BFA365', vis: false },
+      '5.3': { color: '#2C3E50', vis: false },
+      '5.4': { color: '#349872' },
+      '5.5': { color: '#8E70DB' },
+      '5.6': { color: '#2980B9' },
+      'default': { color: '#E74C3C' }
+    },
+    versions: function() {
+      return _.keys(this.series)
+    },
     getReleases: function() {
       // @todo Rewrite to use {cache:true}
       return $http.get('data/releases.json')
@@ -125,13 +133,13 @@ angular.module('phpVersionInfo.version', [])
       var parent = this
       
       // Create a key for each version in the data object
-      this.versions.forEach(function(ver) {
+      _.each(this.versions(), function(ver) {
         parent.data[ver] = {}
       })
 
       // Go through the list of hosts and add the host versions into the data object
-      hosts.forEach(function(host) {
-        parent.versions.forEach(function(ver) {
+      _.each(hosts, function(host) {
+        _.each(parent.versions(), function(ver) {
 
           // ver = '5.2'
           // verKey = php52
@@ -186,37 +194,18 @@ angular.module('phpVersionInfo.version', [])
       var series = []
 
       // Create a series array from our data object
-      this.versions.forEach(function(ver){
-          var color = false
-          var vis = true
-        if(ver == '5.2') {
-          color = '#BFA365'
-          vis = false
-        }
-        else if(ver == '5.3') {
-          color = '#2C3E50'
-          vis = false
-        }
-        else if(ver == '5.4') {
-          color = '#349872'
-        }
-        else if(ver == '5.5') {
-          color = '#8E70DB'
-        }
-        else if(ver == '5.6') {
-          color = '#2980B9'
-        }
-        else if(ver == 'default') {
-          color = '#E74C3C'
-        }
+      _.each(this.versions(), function(ver){
+        
+        // Set the config defaults for our chart series
+        var config = _.mapObject(parent.series, function(obj) { 
+          return _.defaults(obj, { color: false, vis: true })
+        })
 
         series.push({
           name: parent.format(ver),
-          data: Object.keys(parent.data[ver]).map(function (key) {
-            return parent.data[ver][key]
-          }),
-          visible: vis,
-          color: color
+          data: _.values(parent.data[ver]),
+          visible: config[ver].vis,
+          color: config[ver].color
         })
       })
 
