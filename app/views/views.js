@@ -7,7 +7,6 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 * Route provider
 *
 ******************************************************************/
-
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/', {
     templateUrl: 'views/intro.html',
@@ -26,6 +25,16 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
     controller: 'LinuxCtrl'
   });
 }])
+
+/*****************************************************************
+*
+* Underscore library
+*
+******************************************************************/
+.constant('_', window._)
+.run(function ($rootScope) {
+   $rootScope._ = window._;
+})
 
 /*****************************************************************
 *
@@ -63,6 +72,7 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
       'default', '5.2', '5.3', '5.4', '5.5', '5.6'
     ],
     getReleases: function() {
+      // @todo Rewrite to use {cache:true}
       return $http.get('data/releases.json')
         .then(function(response) {
           if(response.status === 200) {
@@ -84,6 +94,70 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
           // return data[key]
         // })
       // }
+    },
+    getThreats: function() {
+      return $http.get('https://cdn.rawgit.com/psecio/versionscan/master/src/Psecio/Versionscan/checks.json', {cache: true})
+
+    },
+    threats: function(key, callback) {
+
+      this.getThreats().then(function(res) {
+
+        var threats = []
+
+        // Loop through the threats
+        _.each(res.data.checks, function(check, index, list) {          
+          // Find if key is vulnerable to threat 
+          var threat = _.find(check.fixVersions.base, function(fix_version) {
+            // verion will be a string with the version number in which a threat is fixed
+            // example: '5.4.2'
+            fix_version = fix_version.split('.')
+            var version = key.split('.')
+
+            // Check to see if our version key is below the fix_version 
+            if(fix_version[0] == version[0] && 
+               fix_version[1] == version[1] && 
+               parseInt(fix_version[2]) > parseInt(version[2]) ) {
+              return true
+            }
+          })
+
+          // If key is vulnerable to this threat then report it
+          if(threat !== undefined) {
+            threats.push(check)
+          }
+        })
+
+        callback(null, threats)
+      })
+    },
+    info: function(key, callback) {
+
+      var release = this.releases(key)
+
+      if(release !== undefined)
+        var output = '<p>Released: ' + release.date + '</p>'
+      else {
+        callback(null, 'No data available')
+      }
+
+      return this.threats(key, function(err, threats) {
+        if(err) {
+          console.error('Error calling Version.threats()')
+          callback(err, output)
+        }
+        else if(threats.length > 1) {
+          output += '<p>' + threats.length + ' threats</p>'
+        }
+        else if(threats.length === 1) {
+          output += '<p>' + threats.length + ' threat</p>'
+        }
+        else {
+          output += '<p>No threats</p>'
+        }
+        
+        callback(null, output)
+      })
     },
     format: function(ver, patch) {
       if(ver === 'default' && (patch === undefined || patch === 'flatten')) {
@@ -283,7 +357,6 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 * IntroCtrl controller
 *
 ******************************************************************/
-
 .controller('IntroCtrl', [function() {
 
 }])
@@ -293,7 +366,6 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 * SharedCtrl controller
 *
 ******************************************************************/
-
 .controller('SharedCtrl', ['$scope', 'YamlService', 'ChartService', 'Version', function($scope, YamlService, ChartService, Version) {
 
   YamlService.get('shared_hosts').then(function(data){
@@ -305,15 +377,9 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
   })
 
   $scope.versionInfo = function(key) {
-    var release = Version.releases(key)
-    // @todo Check threats for each php version. Make a $get call to:
-    // https://cdn.rawgit.com/psecio/versionscan/master/src/Psecio/Versionscan/checks.json
-    // Then compare the php version with it to check threats
-    if(release !== undefined)
-      return 'Released: ' + release.date
-    else {
-      return 'No data available'
-    }
+    Version.info(key, function(err, output) {
+      console.log(output)
+    })
   }
 
 }])
@@ -323,7 +389,6 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 * CustomCtrl controller
 *
 ******************************************************************/
-
 .controller('CustomCtrl', ['$scope', 'YamlService', 'ChartService', 'Version', function($scope, YamlService, ChartService, Version) {
 
   // @todo Add version release dates to table tooltips
@@ -335,12 +400,9 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
   })
 
   $scope.versionInfo = function(key) {
-    var release = Version.releases(key)
-    if(release !== undefined)
-      return 'Released: ' + release.date
-    else {
-      return 'No data available'
-    }
+    Version.info(key, function(err, output) {
+      console.log(output)
+    })
   }
 
 }])
@@ -350,7 +412,6 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
 * LinuxCtrl controller
 *
 ******************************************************************/
-
 .controller('LinuxCtrl', ['$scope', 'YamlService', 'ChartService', 'Version', function($scope, YamlService, ChartService, Version) {
 
   // @todo Add version release dates to table tooltips
@@ -362,12 +423,9 @@ angular.module('myApp.views', ['ngRoute', 'highcharts-ng', 'ui.bootstrap'])
   })
 
   $scope.versionInfo = function(key) {
-    var release = Version.releases(key)
-    if(release !== undefined)
-      return 'Released: ' + release.date
-    else {
-      return 'No data available'
-    }
+    Version.info(key, function(err, output) {
+      console.log(output)
+    })
   }
 
 }])

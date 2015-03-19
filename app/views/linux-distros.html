@@ -12,7 +12,7 @@
     <tbody>
       <tr ng-repeat="distro in distros">
         <td>{{ distro.name }}</td>
-        <td tooltip="{{versionInfo(distro.default)}}">{{ distro.default }}</td>
+        <td ng-mouseenter="versionInfo(distro.default)">{{ distro.default }}</td>
       </tr>
     </tbody>
   </table>
